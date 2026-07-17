@@ -52,27 +52,27 @@ void mmap_heavy() {
 }
 
 int main() {
-    std::thread([] {
+    std::thread t1([] {
         while (true) {
             cpu_heavy();
         }
-    }).detach();
+    });
 
-    std::thread([] {
+    std::thread t2([] {
         while (true) {
             syscall_heavy();
         }
-    }).detach();
+    });
 
-    std::thread([] {
+    std::thread t3([] {
         while (true) {
             mmap_heavy();
         }
-    }).detach();
+    });
 
-    while (true) {
-        sleep(60);
-    }
+    t1.join();
+    t2.join();
+    t3.join();
 
     return 0;
 }
