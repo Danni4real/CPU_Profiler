@@ -16,6 +16,9 @@
 #include <algorithm>
 #include <unordered_set>
 
+#define PRINT_PROFILE_REPORT_INTERVAL 3 // seconds
+#define CPU_USAGE_RANKING_NUM 10
+
 #define PROFILE_FUNCTION() \
     static FunctionCpuUsageMonitor _function_monitor_(__PRETTY_FUNCTION__); \
     static std::atomic_bool _registered_{false}; \
@@ -111,7 +114,7 @@ public:
                       return *a > *b;
                   });
 
-        int count = 10;
+        int count = CPU_USAGE_RANKING_NUM;
         for (auto item : vec) {
             if (count-- > 0 && process_used_cpu_time_ns > 0) {
                 std::cout
@@ -133,7 +136,7 @@ private:
                 clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts);
                 auto start_time = static_cast<uint64_t>(ts.tv_sec) * 1000000000ULL + ts.tv_nsec;
 
-                std::this_thread::sleep_for(std::chrono::seconds(30));
+                std::this_thread::sleep_for(std::chrono::seconds(PRINT_PROFILE_REPORT_INTERVAL));
 
                 clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &ts);
                 auto end_time = static_cast<uint64_t>(ts.tv_sec) * 1000000000ULL + ts.tv_nsec;
